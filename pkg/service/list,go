@@ -1,0 +1,13 @@
+package service
+
+import (
+	"github.com/DanilMankiev/todo-app/pkg/repository"
+)
+
+type CreatListServer struct {
+	repo repository.ListOfproducts
+}
+
+func (s *CreateListServer) CreateList(list sofia.List) (int, error) {
+	return s.repo.CreateUser(list)
+}
