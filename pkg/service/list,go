@@ -1,13 +1,18 @@
 package service
 
 import (
-	"github.com/DanilMankiev/todo-app/pkg/repository"
+	"github.com/DanilMankiev/sofia-app"
+	"github.com/DanilMankiev/sofia-app/pkg/repository"
 )
 
-type CreatListServer struct {
+type ListService struct {
 	repo repository.ListOfproducts
 }
 
-func (s *CreateListServer) CreateList(list sofia.List) (int, error) {
+func newListService(repo repository.ListOfproducts) *ListService {
+	return &ListService{repo: repo}
+}
+
+func (s *ListService) CreateList(list sofia.List) (int, error) {
 	return s.repo.CreateUser(list)
 }

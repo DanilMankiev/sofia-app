@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"github.com/DanilMankiev/todo-app/pkg/service"
+	"github.com/DanilMankiev/sofia-app/pkg/service"
 	"github.com/gin-gonic/gin"
 )
 

@@ -1,7 +1,8 @@
 package service
 
 import (
-	"github.com/DanilMankiev/todo-app/pkg/repository"
+	"github.com/DanilMankiev/sofia-app"
+	"github.com/DanilMankiev/sofia-app/pkg/repository"
 )
 
 type Authorization interface {
@@ -20,6 +21,7 @@ type Service struct {
 
 func NewService(repos *repository.Repository) *Service {
 	return &Service{
-		Authorization: newAuthService(repos.Authorization),
+		Authorization:  newAuthService(repos.Authorization),
+		ListOfproducts: newListService(repos.ListOfproducts),
 	}
 }

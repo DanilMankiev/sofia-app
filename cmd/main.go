@@ -12,9 +12,10 @@ import (
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 
-	"github.com/DanilMankiev/todo-app/pkg/handler"
-	"github.com/DanilMankiev/todo-app/pkg/repository"
-	"github.com/DanilMankiev/todo-app/pkg/service"
+	"github.com/DanilMankiev/sofia-app"
+	"github.com/DanilMankiev/sofia-app/pkg/handler"
+	"github.com/DanilMankiev/sofia-app/pkg/repository"
+	"github.com/DanilMankiev/sofia-app/pkg/service"
 	"github.com/spf13/viper"
 )
 

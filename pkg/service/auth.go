@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/DanilMankiev/todo-app/pkg/repository"
+	"github.com/DanilMankiev/sofia-app"
+	"github.com/DanilMankiev/sofia-app/pkg/repository"
 	"github.com/golang-jwt/jwt"
 )
 

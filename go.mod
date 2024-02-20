@@ -1,4 +1,4 @@
-module github.com/DanilMankiev/todo-app
+module github.com/DanilMankiev/sofia-app
 
 go 1.21.3
 

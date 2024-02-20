@@ -8,6 +8,6 @@ type User struct {
 }
 
 type List struct {
-	List_id  int    `json:"-" db:"id"`
+	List_id  int    `json:"-" db:"list_id"`
 	Listname string `json:"listname" binding:"required"`
 }

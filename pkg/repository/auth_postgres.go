@@ -3,6 +3,7 @@ package repository
 import (
 	"fmt"
 
+	"github.com/DanilMankiev/sofia-app"
 	"github.com/jmoiron/sqlx"
 )
 

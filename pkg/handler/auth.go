@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 
+	"github.com/DanilMankiev/sofia-app"
 	"github.com/gin-gonic/gin"
 )
 

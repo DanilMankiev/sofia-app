@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"github.com/DanilMankiev/sofia-app"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -24,6 +25,7 @@ type Repository struct {
 
 func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{
-		Authorization: NewAuthPostgres(db),
+		Authorization:  NewAuthPostgres(db),
+		ListOfproducts: NewListPostgres(db),
 	}
 }
