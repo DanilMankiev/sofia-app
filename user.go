@@ -6,8 +6,3 @@ type User struct {
 	Username string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
-
-type List struct {
-	List_id  int    `json:"-" db:"list_id"`
-	Listname string `json:"listname" binding:"required"`
-}

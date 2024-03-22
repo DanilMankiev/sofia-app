@@ -12,20 +12,30 @@ type Authorization interface {
 
 type ListOfproducts interface {
 	CreateList(list sofia.List) (int, error)
+	GetAllLists() ([]sofia.List, error)
+	GetListById(id int) (sofia.List, error)
+	UpdateList(id int, input sofia.UpdateListInput) error
+	DeleteList(id int) error
 }
 
-type Item interface {
+type Product interface {
+	GetAllItems(list_id int) ([]sofia.Product, error)
+	CreateProduct(list_id int, input sofia.CreateProduct) (int, error)
+	GetItemByid(poduct_id int) (sofia.Product, error)
+	DeleteItem(product_id int) error
+	UpdateItem(product_id int, input sofia.UpdateItemInput) error
 }
 
 type Repository struct {
 	Authorization
 	ListOfproducts
-	Item
+	Product
 }
 
 func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{
 		Authorization:  NewAuthPostgres(db),
 		ListOfproducts: NewListPostgres(db),
+		Product:        NewProductPostgres(db),
 	}
 }

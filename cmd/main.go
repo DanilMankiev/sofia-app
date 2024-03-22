@@ -1,9 +1,12 @@
 package main
 
 import (
+	"context"
 	_ "database/sql"
 	"os"
+	"os/signal"
 	"path/filepath"
+	"syscall"
 
 	"github.com/sirupsen/logrus"
 
@@ -25,13 +28,15 @@ func main() {
 		logrus.Fatalf("Error initializing configs:%s", err.Error())
 	}
 
-	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	_, err := filepath.Abs(filepath.Dir(os.Args[0]))
 
 	if err != nil {
 		logrus.Fatalf("Error loading env variables: %s", err.Error())
 	}
 
-	err = godotenv.Load(filepath.Join(dir, ".env"))
+	if err = godotenv.Load(); err != nil {
+		logrus.Fatalf("error loading .env")
+	}
 
 	db, err := repository.NewPostgresDB(repository.Config{
 		Host:     viper.GetString("db.host"),
@@ -41,6 +46,7 @@ func main() {
 		SSLMode:  viper.GetString("db.sslmode"),
 		Password: "root",
 	})
+	logrus.Print(os.Getenv("DB_PASSWORD"))
 	if err != nil {
 		logrus.Fatalf("Failed to init DB:%s", err.Error())
 	}
@@ -51,8 +57,26 @@ func main() {
 
 	srv := new(sofia.Server)
 
-	if err := srv.Run(viper.GetString("port"), handlers.InitRoutes()); err != nil {
-		logrus.Fatalf("Error ocured while running http server: %s", err.Error())
+	go func() {
+		if err := srv.Run(viper.GetString("port"), handlers.InitRoutes()); err != nil {
+			logrus.Fatalf("error occured while running http server: %s", err.Error())
+		}
+	}()
+
+	logrus.Print("App Started")
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+	<-quit
+
+	logrus.Print("App Shutting Down")
+
+	if err := srv.Shutdown(context.Background()); err != nil {
+		logrus.Errorf("error occured on server shutting down: %s", err.Error())
+	}
+
+	if err := db.Close(); err != nil {
+		logrus.Errorf("error occured on db connection close: %s", err.Error())
 	}
 }
 

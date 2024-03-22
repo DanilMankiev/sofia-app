@@ -1,26 +1,51 @@
 package sofia
 
-type TodoList struct {
-	Id          int    `json:"id"`
-	Title       string `json:"title"`
-	Description string `json:"descriotion"`
+import (
+	"errors"
+)
+
+type List struct {
+	List_id     int    `json:"list_id" db:"list_id"`
+	Listname    string `json:"listname" binding:"required"`
+	Description string `json:"description" binding:"required"`
 }
 
-type UserList struct {
-	Id     int
-	UserId int
-	ListId int
+type Product struct {
+	Product_id   int    `json:"product_id" db:"product_id"`
+	Product_name string `json:"product_name" binding:"required"`
+	List_id      int    `json:"list_id"`
+	Description  string `json:"description" binding:"required"`
+	Price        int    `json:"price" binding:"required"`
 }
 
-type TodoItem struct {
-	Id          int    `json:"id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Done        bool   `json:"done"`
+type CreateProduct struct {
+	Product_name string `json:"product_name" binding:"required"`
+	Description  string `json:"description" binding:"required"`
+	Price        int    `json:"price" binding:"required"`
 }
 
-type ListsItem struct {
-	Id     int
-	ListId int
-	ItemId int
+type UpdateListInput struct {
+	Listname    *string `json:"listname"`
+	Description *string `json:"description"`
+}
+
+type UpdateItemInput struct {
+	Product_name *string `json:"product_name"`
+	List_id      *int    `json:"list_id"`
+	Description  *string `json:"description"`
+	Price        *int    `json:"price"`
+}
+
+func (up UpdateListInput) Validate() error {
+	if up.Listname == nil && up.Description == nil {
+		return errors.New("update table no validate")
+	}
+	return nil
+}
+
+func (up UpdateItemInput) Validate() error {
+	if up.Product_name == nil && up.List_id == nil && up.Description == nil && up.Price == nil {
+		return errors.New("update item no valiable")
+	}
+	return nil
 }
