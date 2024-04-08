@@ -26,10 +26,22 @@ type Product interface {
 	UpdateItem(product_id int, input sofia.UpdateItemInput) error
 }
 
+type ProductImage interface {
+	CreateImage(input sofia.ImageInput) error
+	GetAllImages(product_id int) ([]string, error)
+	GetImageById(product_id int, image_id int) (string, error)
+	DeleteImage(image_id int) error
+}
+
+type ListImage interface {
+}
+
 type Repository struct {
 	Authorization
 	ListOfproducts
 	Product
+	ProductImage
+	ListImage
 }
 
 func NewRepository(db *sqlx.DB) *Repository {
@@ -37,5 +49,6 @@ func NewRepository(db *sqlx.DB) *Repository {
 		Authorization:  NewAuthPostgres(db),
 		ListOfproducts: NewListPostgres(db),
 		Product:        NewProductPostgres(db),
+		ProductImage:   NewProductImagePostgres(db),
 	}
 }

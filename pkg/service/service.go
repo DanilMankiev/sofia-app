@@ -27,10 +27,22 @@ type Product interface {
 	UpdateItem(product_id int, input sofia.UpdateItemInput) error
 }
 
+type ProductImage interface {
+	CreateImage(input sofia.ImageInput) error
+	GetAllImages(product_id int) ([]string, error)
+	GetImageById(product_id int, image_id int) (string, error)
+	DeleteImage(image_id int) error
+}
+
+type ListImage interface {
+}
+
 type Service struct {
 	Authorization
 	ListOfproducts
 	Product
+	ProductImage
+	ListImage
 }
 
 func NewService(repos *repository.Repository) *Service {
@@ -38,5 +50,6 @@ func NewService(repos *repository.Repository) *Service {
 		Authorization:  newAuthService(repos.Authorization),
 		ListOfproducts: newListService(repos.ListOfproducts),
 		Product:        newProductService(repos.Product, repos.ListOfproducts),
+		ProductImage:   newProductImageService(repos.ProductImage),
 	}
 }

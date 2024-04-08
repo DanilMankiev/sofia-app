@@ -23,6 +23,10 @@ import (
 )
 
 func main() {
+
+	 
+
+
 	logrus.SetFormatter(new(logrus.JSONFormatter))
 	if err := initConfig(); err != nil {
 		logrus.Fatalf("Error initializing configs:%s", err.Error())
@@ -44,9 +48,8 @@ func main() {
 		Username: viper.GetString("db.username"),
 		DBname:   viper.GetString("db.dbname"),
 		SSLMode:  viper.GetString("db.sslmode"),
-		Password: "root",
+		Password: os.Getenv("DB_PASSWORD"),
 	})
-	logrus.Print(os.Getenv("DB_PASSWORD"))
 	if err != nil {
 		logrus.Fatalf("Failed to init DB:%s", err.Error())
 	}

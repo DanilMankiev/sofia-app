@@ -10,6 +10,7 @@ const (
 	usersTable   = "users"
 	listsTable   = "lists"
 	productTable = "product"
+	imageTable   = "images"
 )
 
 type Config struct {

@@ -36,6 +36,15 @@ type UpdateItemInput struct {
 	Price        *int    `json:"price"`
 }
 
+type ImageInput struct {
+	Product_id int    `json:"product_id"`
+	Image      string `json:"img"`
+}
+
+type ImageOutput struct {
+	Url string `json:"url"`
+}
+
 func (up UpdateListInput) Validate() error {
 	if up.Listname == nil && up.Description == nil {
 		return errors.New("update table no validate")
