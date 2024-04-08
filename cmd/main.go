@@ -24,9 +24,6 @@ import (
 
 func main() {
 
-	 
-
-
 	logrus.SetFormatter(new(logrus.JSONFormatter))
 	if err := initConfig(); err != nil {
 		logrus.Fatalf("Error initializing configs:%s", err.Error())
@@ -43,11 +40,11 @@ func main() {
 	}
 
 	db, err := repository.NewPostgresDB(repository.Config{
-		Host:     viper.GetString("db.host"),
-		Port:     viper.GetString("db.port"),
-		Username: viper.GetString("db.username"),
-		DBname:   viper.GetString("db.dbname"),
-		SSLMode:  viper.GetString("db.sslmode"),
+		Host:     os.Getenv("host"),
+		Port:     os.Getenv("port"),
+		Username: os.Getenv("username"),
+		DBname:   os.Getenv("dbname"),
+		SSLMode:  os.Getenv("sslmode"),
 		Password: os.Getenv("DB_PASSWORD"),
 	})
 	if err != nil {
@@ -61,7 +58,7 @@ func main() {
 	srv := new(sofia.Server)
 
 	go func() {
-		if err := srv.Run(viper.GetString("port"), handlers.InitRoutes()); err != nil {
+		if err := srv.Run(os.Getenv("ports"), handlers.InitRoutes()); err != nil {
 			logrus.Fatalf("error occured while running http server: %s", err.Error())
 		}
 	}()
