@@ -25,9 +25,9 @@ import (
 func main() {
 
 	logrus.SetFormatter(new(logrus.JSONFormatter))
-	if err := initConfig(); err != nil {
-		logrus.Fatalf("Error initializing configs:%s", err.Error())
-	}
+	// if err := initConfig(); err != nil {
+	// 	logrus.Fatalf("Error initializing configs:%s", err.Error())
+	// }
 
 	_, err := filepath.Abs(filepath.Dir(os.Args[0]))
 
@@ -35,7 +35,7 @@ func main() {
 		logrus.Fatalf("Error loading env variables: %s", err.Error())
 	}
 
-	if err = godotenv.Load(); err != nil {
+	if err = godotenv.Load("../.env"); err != nil {
 		logrus.Fatalf("error loading .env")
 	}
 

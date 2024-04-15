@@ -4,13 +4,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/DanilMankiev/sofia-app"
+	"github.com/DanilMankiev/sofia-app/entities"
 	"github.com/gin-gonic/gin"
 )
 
-type GetAllProductResponse struct {
-	Data []sofia.Product
-}
 
 func (h *Handler) getAllProducts(c *gin.Context) {
 	list_id, err := strconv.Atoi(c.Param("id"))
@@ -24,9 +21,7 @@ func (h *Handler) getAllProducts(c *gin.Context) {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, GetAllProductResponse{
-		Data: products,
-	})
+	c.JSON(http.StatusOK, products)
 
 }
 
@@ -38,7 +33,7 @@ func (h *Handler) createProduct(c *gin.Context) {
 		return
 	}
 
-	var input sofia.CreateProduct
+	var input entity.CreateProduct
 	if err := c.BindJSON(&input); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
@@ -72,7 +67,7 @@ func (h *Handler) getItemById(c *gin.Context) {
 }
 
 func (h *Handler) updateItem(c *gin.Context) {
-	var input sofia.UpdateItemInput
+	var input entity.UpdateProductInput
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {

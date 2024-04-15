@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/DanilMankiev/sofia-app"
+	"github.com/DanilMankiev/sofia-app/entities"
 	"github.com/DanilMankiev/sofia-app/pkg/repository"
 )
 
@@ -13,7 +13,7 @@ func newProductImageService(repo repository.ProductImage) *ImageService {
 	return &ImageService{repo: repo}
 }
 
-func (im *ImageService) CreateImage(input sofia.ImageInput) error {
+func (im *ImageService) CreateImage(input entity.ImageInput) error {
 	return im.repo.CreateImage(input)
 }
 

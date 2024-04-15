@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/DanilMankiev/sofia-app"
+	"github.com/DanilMankiev/sofia-app/entities"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -16,8 +16,8 @@ func NewProductPostgres(db *sqlx.DB) *ProductPostgres {
 	return &ProductPostgres{db: db}
 }
 
-func (it *ProductPostgres) GetAllItems(list_id int) ([]sofia.Product, error) {
-	var products []sofia.Product
+func (it *ProductPostgres) GetAllItems(list_id int) ([]entity.Product, error) {
+	var products []entity.Product
 
 	query := fmt.Sprintf("SELECT * FROM %s", productTable)
 	err := it.db.Select(&products, query)
@@ -28,7 +28,7 @@ func (it *ProductPostgres) GetAllItems(list_id int) ([]sofia.Product, error) {
 
 }
 
-func (it *ProductPostgres) CreateProduct(list_id int, input sofia.CreateProduct) (int, error) {
+func (it *ProductPostgres) CreateProduct(list_id int, input entity.CreateProduct) (int, error) {
 	var product_id int
 
 	query := fmt.Sprintf("INSERT INTO %s (product_name, list_id, description, price) values ($1,$2,$3,$4) RETURNING product_id", productTable)
@@ -43,8 +43,8 @@ func (it *ProductPostgres) CreateProduct(list_id int, input sofia.CreateProduct)
 
 }
 
-func (it *ProductPostgres) GetItemByid(product_id int) (sofia.Product, error) {
-	var product sofia.Product
+func (it *ProductPostgres) GetItemByid(product_id int) (entity.Product, error) {
+	var product entity.Product
 
 	query := fmt.Sprintf("SELECT * FROM %s WHERE product_id=&1", productTable)
 
@@ -61,7 +61,7 @@ func (it *ProductPostgres) DeleteItem(product_id int) error {
 	return err
 }
 
-func (it *ProductPostgres) UpdateItem(product_id int, input sofia.UpdateItemInput) error {
+func (it *ProductPostgres) UpdateItem(product_id int, input entity.UpdateProductInput) error {
 	setValues := make([]string, 0)
 	args := make([]interface{}, 0)
 	argId := 1

@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/DanilMankiev/sofia-app"
+	"github.com/DanilMankiev/sofia-app/entities"
 	"github.com/DanilMankiev/sofia-app/pkg/repository"
 )
 
@@ -14,12 +14,12 @@ func newProductService(repo repository.Product, listrepo repository.ListOfproduc
 	return &ProductService{repo: repo, listrepo: listrepo}
 }
 
-func (it *ProductService) GetAllItems(list_id int) ([]sofia.Product, error) {
+func (it *ProductService) GetAllItems(list_id int) ([]entity.Product, error) {
 
 	return it.repo.GetAllItems(list_id)
 }
 
-func (it *ProductService) CreateProduct(list_id int, input sofia.CreateProduct) (int, error) {
+func (it *ProductService) CreateProduct(list_id int, input entity.CreateProduct) (int, error) {
 	_, err := it.listrepo.GetListById(list_id)
 	if err != nil {
 		// error
@@ -28,7 +28,7 @@ func (it *ProductService) CreateProduct(list_id int, input sofia.CreateProduct) 
 	return it.repo.CreateProduct(list_id, input)
 }
 
-func (it *ProductService) GetItemByid(product_id int) (sofia.Product, error) {
+func (it *ProductService) GetItemByid(product_id int) (entity.Product, error) {
 	return it.repo.GetItemByid(product_id)
 }
 
@@ -36,6 +36,6 @@ func (it *ProductService) DeleteItem(product_id int) error {
 	return it.repo.DeleteItem(product_id)
 }
 
-func (it *ProductService) UpdateItem(product_id int, input sofia.UpdateItemInput) error {
+func (it *ProductService) UpdateItem(product_id int, input entity.UpdateProductInput) error {
 	return it.repo.UpdateItem(product_id, input)
 }

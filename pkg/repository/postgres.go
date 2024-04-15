@@ -11,6 +11,9 @@ const (
 	listsTable   = "lists"
 	productTable = "product"
 	imageTable   = "images"
+	reviewTable = "reviews"
+	blogTable = "blog"
+	blogImages = "blog_images"
 )
 
 type Config struct {

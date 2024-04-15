@@ -4,16 +4,12 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/DanilMankiev/sofia-app"
+	"github.com/DanilMankiev/sofia-app/entities"
 	"github.com/gin-gonic/gin"
 )
 
-type GetAllListResponse struct {
-	Data []sofia.List
-}
-
 func (h *Handler) createList(c *gin.Context) {
-	var input sofia.List
+	var input entity.List
 
 	if err := c.BindJSON(&input); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
@@ -41,9 +37,7 @@ func (h *Handler) getAllList(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, GetAllListResponse{
-		Data: lists,
-	})
+	c.JSON(http.StatusOK, lists)
 
 }
 
@@ -64,7 +58,7 @@ func (h *Handler) getListById(c *gin.Context) {
 }
 
 func (h *Handler) updateList(c *gin.Context) {
-	var input sofia.UpdateListInput
+	var input entity.UpdateListInput
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {

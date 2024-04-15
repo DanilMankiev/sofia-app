@@ -3,7 +3,7 @@ package repository
 import (
 	"fmt"
 
-	"github.com/DanilMankiev/sofia-app"
+	"github.com/DanilMankiev/sofia-app/entities"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -15,7 +15,7 @@ func NewProductImagePostgres(db *sqlx.DB) *ProductImagePostgres {
 	return &ProductImagePostgres{db: db}
 }
 
-func (pi *ProductImagePostgres) CreateImage(input sofia.ImageInput) error {
+func (pi *ProductImagePostgres) CreateImage(input entity.ImageInput) error {
 	query := fmt.Sprintf("INSERT INTO %s (product_id,img) values ($1,$2)", imageTable)
 	_, err := pi.db.Exec(query, input.Product_id, input.Image)
 	if err != nil {

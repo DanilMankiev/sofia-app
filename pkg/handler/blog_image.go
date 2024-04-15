@@ -9,11 +9,12 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/DanilMankiev/sofia-app"
+
+	entity "github.com/DanilMankiev/sofia-app/entities"
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) createImage(c *gin.Context) {
+func (h *Handler) createBlogImage(c *gin.Context) {
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -28,15 +29,15 @@ func (h *Handler) createImage(c *gin.Context) {
 	}
 
 	defer file.Close()
-	fileName := fmt.Sprintf("%d.jpg", time.Now().Unix())
-	path := fmt.Sprintf("E:/trash/static/storage/%d", id)
+	fileName := fmt.Sprintf("%d/%d.jpg",id, time.Now().Unix())
+	path := os.Getenv("pathBlogImage")
 	if err := os.MkdirAll(path, 0755); err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	imageURL := filepath.Join(path, fileName)
-	targetFile, err := os.OpenFile(imageURL, os.O_CREATE, 0644)
+	targetFile, err := os.OpenFile(imageURL, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -49,7 +50,7 @@ func (h *Handler) createImage(c *gin.Context) {
 		return
 	}
 
-	err = h.services.ProductImage.CreateImage(sofia.ImageInput{Product_id: id, Image: imageURL})
+	err = h.services.BlogImage.CreateImage(entity.ImageInputBlog{Blog_id: id, Image: imageURL})
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 	}
@@ -59,14 +60,14 @@ func (h *Handler) createImage(c *gin.Context) {
 	})
 }
 
-func (h *Handler) getAllImages(c *gin.Context) {
+func (h *Handler) getAllBlogImages(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, "invalid id param")
 		return
 	}
 
-	imagePaths, err := h.services.ProductImage.GetAllImages(id)
+	imagePaths, err := h.services.BlogImage.GetAllImages(id)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 	}
@@ -103,7 +104,7 @@ func (h *Handler) getAllImages(c *gin.Context) {
 
 }
 
-func (h *Handler) getImageById(c *gin.Context) {
+func (h *Handler) getBlogImageById(c *gin.Context) {
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -117,7 +118,7 @@ func (h *Handler) getImageById(c *gin.Context) {
 		return
 	}
 
-	imagePath, err := h.services.ProductImage.GetImageById(id, im_id)
+	imagePath, err := h.services.BlogImage.GetImageById(id, im_id)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -137,18 +138,18 @@ func (h *Handler) getImageById(c *gin.Context) {
 
 }
 
-func (h *Handler) updateImage(c *gin.Context) {
+func (h *Handler) updateBlogImage(c *gin.Context) {
 
 }
 
-func (h *Handler) deleteImage(c *gin.Context) {
+func (h *Handler) deleteBlogImage(c *gin.Context) {
 	im_id, err := strconv.Atoi(c.Param("im_id"))
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, "invalid im_id param")
 		return
 	}
 
-	err = h.services.ProductImage.DeleteImage(im_id)
+	err = h.services.BlogImage.DeleteImage(im_id)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return

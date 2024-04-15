@@ -54,6 +54,32 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			}
 		}
 
+		reviews := api.Group("review")
+		{
+			reviews.POST("/", h.createReview)
+			reviews.GET("/", h.getAllReview)
+			reviews.PUT("/:id", h.updateReview)
+			reviews.DELETE("/:id", h.deleteReview)
+		}
+
+		blog := api.Group("blog")
+		{
+			blog.POST("/", h.createBlog)
+			blog.GET("/", h.getAllBlog)
+			blog.GET("/:id", h.getBlogById)
+			blog.PUT("/:id", h.updateBlog)
+			blog.DELETE("/:id", h.deleteBlog)
+
+			images := blog.Group(":id/images")
+			{
+				images.POST("/", h.createBlogImage)
+				images.GET("/", h.getAllBlogImages)
+				images.GET("/:im_id", h.getBlogImageById)
+				images.PUT("/:im_id", h.updateBlogImage)
+				images.DELETE("/:im_id", h.deleteBlogImage)
+			}
+
+		}
+		return router
 	}
-	return router
 }

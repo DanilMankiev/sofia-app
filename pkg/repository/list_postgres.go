@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	sofia "github.com/DanilMankiev/sofia-app"
+	"github.com/DanilMankiev/sofia-app/entities"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -16,7 +16,7 @@ func NewListPostgres(db *sqlx.DB) *ListPostgres {
 	return &ListPostgres{db: db}
 }
 
-func (l *ListPostgres) CreateList(list sofia.List) (int, error) {
+func (l *ListPostgres) CreateList(list entity.List) (int, error) {
 	var list_id int
 
 	query := fmt.Sprintf("INSERT INTO %s (listname,description) values ($1,$2) RETURNING list_id", listsTable)
@@ -31,8 +31,8 @@ func (l *ListPostgres) CreateList(list sofia.List) (int, error) {
 
 }
 
-func (l *ListPostgres) GetAllLists() ([]sofia.List, error) {
-	var lists []sofia.List
+func (l *ListPostgres) GetAllLists() ([]entity.List, error) {
+	var lists []entity.List
 	query := fmt.Sprintf("SELECT * FROM %s", listsTable)
 	err := l.db.Select(&lists, query)
 	if err != nil {
@@ -42,8 +42,8 @@ func (l *ListPostgres) GetAllLists() ([]sofia.List, error) {
 	return lists, nil
 }
 
-func (l *ListPostgres) GetListById(id int) (sofia.List, error) {
-	var list sofia.List
+func (l *ListPostgres) GetListById(id int) (entity.List, error) {
+	var list entity.List
 
 	query := fmt.Sprintf("SELECT * FROM %s WHERE list_id= $1", listsTable)
 
@@ -59,7 +59,7 @@ func (l *ListPostgres) DeleteList(id int) error {
 	return err
 }
 
-func (l *ListPostgres) UpdateList(id int, input sofia.UpdateListInput) error {
+func (l *ListPostgres) UpdateList(id int, input entity.UpdateListInput) error {
 	setValues := make([]string, 0)
 	args := make([]interface{}, 0)
 	argId := 1
