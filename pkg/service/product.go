@@ -1,31 +1,31 @@
 package service
 
 import (
-	"github.com/DanilMankiev/sofia-app/entities"
+	entity "github.com/DanilMankiev/sofia-app/entities"
 	"github.com/DanilMankiev/sofia-app/pkg/repository"
 )
 
 type ProductService struct {
-	repo     repository.Product
-	listrepo repository.ListOfproducts
+	repo         repository.Product
+	categoryrepo repository.Category
 }
 
-func newProductService(repo repository.Product, listrepo repository.ListOfproducts) *ProductService {
-	return &ProductService{repo: repo, listrepo: listrepo}
+func newProductService(repo repository.Product, categoryrepo repository.Category) *ProductService {
+	return &ProductService{repo: repo, categoryrepo: categoryrepo}
 }
 
-func (it *ProductService) GetAllItems(list_id int) ([]entity.Product, error) {
+func (it *ProductService) GetAllItems(category_id int) ([]entity.Product, error) {
 
-	return it.repo.GetAllItems(list_id)
+	return it.repo.GetAllItems(category_id)
 }
 
-func (it *ProductService) CreateProduct(list_id int, input entity.CreateProduct) (int, error) {
-	_, err := it.listrepo.GetListById(list_id)
+func (it *ProductService) CreateProduct(category_id int, input entity.CreateProduct) (int, error) {
+	_, err := it.categoryrepo.GetCategoryById(category_id)
 	if err != nil {
 		// error
 		return 0, err
 	}
-	return it.repo.CreateProduct(list_id, input)
+	return it.repo.CreateProduct(category_id, input)
 }
 
 func (it *ProductService) GetItemByid(product_id int) (entity.Product, error) {

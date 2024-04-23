@@ -24,15 +24,15 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	api := router.Group("/api")
 	{
-		lists := api.Group("/list")
+		categorys := api.Group("/category")
 		{
-			lists.POST("/", h.createList)
-			lists.GET("/", h.getAllList)
-			lists.GET("/:id", h.getListById)
-			lists.PUT("/:id", h.updateList)
-			lists.DELETE("/:id", h.deleteList)
+			categorys.POST("/", h.createCategory)
+			categorys.GET("/", h.getAllCategory)
+			categorys.GET("/:id", h.getCategoryById)
+			categorys.PUT("/:id", h.updateCategory)
+			categorys.DELETE("/:id", h.deleteCategory)
 
-			products := lists.Group(":id/products")
+			products := categorys.Group(":id/products")
 			{
 				products.GET("/", h.getAllProducts)
 				products.POST("/", h.createProduct)
@@ -80,6 +80,9 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			}
 
 		}
-		return router
+		api.Static("/stat-images","./images")
+		api.Static("/image","./image")
+		
 	}
+	return router
 }

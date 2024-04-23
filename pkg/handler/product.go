@@ -4,19 +4,18 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/DanilMankiev/sofia-app/entities"
+	entity "github.com/DanilMankiev/sofia-app/entities"
 	"github.com/gin-gonic/gin"
 )
 
-
 func (h *Handler) getAllProducts(c *gin.Context) {
-	list_id, err := strconv.Atoi(c.Param("id"))
+	category_id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, "inavlid id param")
 		return
 	}
 
-	products, err := h.services.Product.GetAllItems(list_id)
+	products, err := h.services.Product.GetAllItems(category_id)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -27,7 +26,7 @@ func (h *Handler) getAllProducts(c *gin.Context) {
 
 func (h *Handler) createProduct(c *gin.Context) {
 
-	list_id, err := strconv.Atoi(c.Param("id"))
+	category_id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, "ivalid param")
 		return
@@ -38,7 +37,7 @@ func (h *Handler) createProduct(c *gin.Context) {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
-	id, err := h.services.Product.CreateProduct(list_id, input)
+	id, err := h.services.Product.CreateProduct(category_id, input)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return

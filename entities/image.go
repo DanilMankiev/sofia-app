@@ -6,8 +6,8 @@ type ImageInput struct {
 }
 
 type ImageInputBlog struct {
-	Blog_id int `json:"blog_id"`
-	Image string `json:"img"`
+	Blog_id int    `json:"blog_id"`
+	Image   string `json:"img"`
 }
 
 type ImageOutput struct {

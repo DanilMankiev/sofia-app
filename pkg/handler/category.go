@@ -4,19 +4,19 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/DanilMankiev/sofia-app/entities"
+	entity "github.com/DanilMankiev/sofia-app/entities"
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) createList(c *gin.Context) {
-	var input entity.List
+func (h *Handler) createCategory(c *gin.Context) {
+	var input entity.Category
 
 	if err := c.BindJSON(&input); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	list_id, err := h.services.ListOfproducts.CreateList(input)
+	Category_id, err := h.services.Category.CreateCategory(input)
 
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
@@ -24,41 +24,41 @@ func (h *Handler) createList(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, map[string]interface{}{
-		"list_id": list_id,
+		"id": Category_id,
 	})
 
 }
 
-func (h *Handler) getAllList(c *gin.Context) {
+func (h *Handler) getAllCategory(c *gin.Context) {
 
-	lists, err := h.services.ListOfproducts.GetAllLists()
+	Categorys, err := h.services.Category.GetAllCategorys()
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, lists)
+	c.JSON(http.StatusOK, Categorys)
 
 }
 
-func (h *Handler) getListById(c *gin.Context) {
+func (h *Handler) getCategoryById(c *gin.Context) {
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, "invalid id param")
 	}
 
-	list, err := h.services.ListOfproducts.GetListById(id)
+	Category, err := h.services.Category.GetCategoryById(id)
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, list)
+	c.JSON(http.StatusOK, Category)
 }
 
-func (h *Handler) updateList(c *gin.Context) {
-	var input entity.UpdateListInput
+func (h *Handler) updateCategory(c *gin.Context) {
+	var input entity.UpdateCategoryInput
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -70,20 +70,20 @@ func (h *Handler) updateList(c *gin.Context) {
 		return
 	}
 
-	h.services.ListOfproducts.UpdateList(id, input)
+	h.services.Category.UpdateCategory(id, input)
 
 	c.JSON(http.StatusOK, statusResponse{
 		Status: "ok",
 	})
 }
 
-func (h *Handler) deleteList(c *gin.Context) {
+func (h *Handler) deleteCategory(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, "invalid id param")
 	}
 
-	err = h.services.ListOfproducts.DeleteList(id)
+	err = h.services.Category.DeleteCategory(id)
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return

@@ -1,29 +1,34 @@
 package handler
 
 import (
+	
 	"net/http"
 
-	"github.com/DanilMankiev/sofia-app"
+	entity "github.com/DanilMankiev/sofia-app/entities"
 	"github.com/gin-gonic/gin"
+	
 )
 
+
+
+
 func (h *Handler) signUp(c *gin.Context) {
-	var input sofia.User
+	var input entity.SignUpInput
 
 	if err := c.BindJSON(&input); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		newErrorResponse(c, http.StatusBadRequest, "invalid request body")
 		return
 	}
+	if input.Email == "" || input.Name == "" || input.Password == ""  || input.Phone == "" {
+		newErrorResponse(c,http.StatusBadRequest, "Email,password,name,phone are required")
+	}
 
-	id, err := h.services.Authorization.CreateUser(input)
-
+	customToken, err := h.services.Authorization.SignUp(input)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 	}
 
-	c.JSON(http.StatusOK, map[string]interface{}{
-		"id": id,
-	})
+	c.JSON(http.StatusOK, gin.H{"token": customToken})
 }
 
 type SignInInput struct {
@@ -31,21 +36,24 @@ type SignInInput struct {
 	Password string `json:"password" binding:"required"`
 }
 
-func (h *Handler) signIn(c *gin.Context) {
-	var input SignInInput
+func (h * Handler) signIn(c *gin.Context){
+	var input entity.SignInInput
 
-	if err := c.BindJSON(&input); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
+	if err:=c.BindJSON(&input);err!=nil{
+		newErrorResponse(c,http.StatusBadRequest, err.Error())
 		return
 	}
 
-	token, err := h.services.Authorization.GenegateToken(input.Username, input.Password)
+	if input.Email =="" || input.Password == "" {
+		newErrorResponse(c, http.StatusBadRequest, "email, password are required")
+		return
+	}
 
-	if err != nil {
+	customToken,err:=h.services.Authorization.SignIn(input)
+	if err!=nil{
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 	}
 
-	c.JSON(http.StatusOK, map[string]interface{}{
-		"token": token,
-	})
-}
+	c.JSON(http.StatusOK,gin.H{"token":customToken})
+
+} 

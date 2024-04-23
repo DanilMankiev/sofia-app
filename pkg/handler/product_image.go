@@ -5,10 +5,10 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"path/filepath"
-	"strconv"
+
 	"time"
 
+	"strconv"
 
 	entity "github.com/DanilMankiev/sofia-app/entities"
 	"github.com/gin-gonic/gin"
@@ -29,22 +29,23 @@ func (h *Handler) createImage(c *gin.Context) {
 	}
 
 	defer file.Close()
-	fileName := fmt.Sprintf("%d/%d.jpg",id, time.Now().Unix())
-	path := os.Getenv("pathProductImage")
+	fileName := fmt.Sprintf("%d.jpg",time.Now().Unix())
+	path := fmt.Sprintf("%s/%d",os.Getenv("pathProductImage"),id)
 	
 	if err := os.MkdirAll(path, 0755); err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	imageURL := filepath.Join(path, fileName)
-	targetFile, err := os.OpenFile(imageURL, os.O_CREATE|os.O_WRONLY, 0644)
+	fullNamePath := fmt.Sprintf("%s/%s",path, fileName)
+	targetFile, err := os.OpenFile(fullNamePath, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 	defer targetFile.Close()
-
+	host:= "http://localhost:8000/api"
+	imageURL:= fmt.Sprintf("%s/%s/%s",host, path, fileName)
 	_, err = io.Copy(targetFile, file)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
@@ -59,7 +60,81 @@ func (h *Handler) createImage(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"imageURL": imageURL,
 	})
+
+// Вариант 2 
+	// извлекаем id продукта и создаем директорию
+	// productId, err := strconv.Atoi(c.Param("id"))
+	// if err != nil {
+	//  	newErrorResponse(c, http.StatusBadRequest, "inavlid id param")
+	//  	return
+	// }
+	// {
+	// 	err := os.MkdirAll(fmt.Sprintf("./image/product/%d", productId), os.ModePerm) // создаем директорию с id продукта, если еще не создана
+	// 	if err != nil {
+	// 		newErrorResponse(c, http.StatusBadRequest, fmt.Sprintf("uploadImage os.MkdirAll error: %s", err))
+	// 		return
+	// 	}
+	// }
+	// path := fmt.Sprintf("./image/product/%d", productId)
+
+	// // извлекаем файл из парамeтров post запроса
+	// form, _ := c.MultipartForm()
+	// var fileName string
+	// imgExt := "jpeg"
+	// // берем первое имя файла из присланного списка
+	// val,_,err:=c.Request.FormFile("image")
+	// val.Read()
+	// for key := range form.File {
+	// 	fileName = key
+	// 	// извлекаем расширение файла
+	
+	// 	fmt.Println(str)
+	// 	arr := strings.Split(fileName, ".")
+	// 	if len(arr) > 1 {
+	// 		imgExt = arr[len(arr)-1]
+	// 	}
+	// }
+	// // извлекаем содержание присланного файла по названию файла
+	// file, _, err := c.Request.FormFile(fileName)
+	// if err != nil {
+	// 	newErrorResponse(c, http.StatusBadRequest, fmt.Sprintf("UploadXml c.Request.FormFile error: %s", err.Error()))
+	// 	return
+	// }
+	// defer file.Close()
+
+	// // читаем содержание присланного файл в []byte
+	// fileBytes, err := io.ReadAll(file)
+	// if err != nil {
+	// 	newErrorResponse(c, http.StatusBadRequest, err.Error())
+	// 	return
+	// }
+
+	// fullFileName := fmt.Sprintf("%d.%s", time.Now().Unix(), imgExt)
+	// // открываем файл для сохранения картинки
+	// fileOnDisk, err := os.Create(fmt.Sprintf("%s/%s", path, fullFileName))
+	// if err != nil {
+	// 	newErrorResponse(c, http.StatusBadRequest, fmt.Sprintf("uploadImage os.Create err: %s", err))
+	// 	return
+	// }
+	// defer fileOnDisk.Close()
+
+	// _, err = fileOnDisk.Write(fileBytes)
+	// if err != nil {
+	// 	newErrorResponse(c, http.StatusBadRequest, err.Error())
+	// 	return
+	// }
+	// err = h.services.ProductImage.CreateImage(entity.ImageInput{Product_id:productId, Image: fullFileName})
+	// if err != nil {
+	// 	newErrorResponse(c, http.StatusInternalServerError, err.Error())
+	// }
+	// c.JSON(http.StatusOK, map[string]interface{}{
+	// 	 	"imageURL": fullFileName,
+	// 	 })
+	
 }
+
+
+
 
 func (h *Handler) getAllImages(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))

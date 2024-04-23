@@ -2,3 +2,4 @@
 .env
 dist/
 .goreleaser.yaml
+service-account-key.json
