@@ -17,14 +17,6 @@ func (im *ImageService) CreateImage(input entity.ImageInput) error {
 	return im.repo.CreateImage(input)
 }
 
-func (im *ImageService) GetAllImages(product_id int) ([]string, error) {
-	return im.repo.GetAllImages(product_id)
-}
-
-func (im *ImageService) GetImageById(product_id int, image_id int) (string, error) {
-	return im.repo.GetImageById(product_id, image_id)
-}
-
-func (im *ImageService) DeleteImage(image_id int) error {
-	return im.repo.DeleteImage(image_id)
+func (im *ImageService) DeleteImage(image_id int, prouct_id int) error {
+	return im.repo.DeleteImage(image_id, prouct_id)
 }

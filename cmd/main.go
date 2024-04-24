@@ -56,7 +56,7 @@ func main() {
 	if err != nil {
 		logrus.Fatalf("Failed to init DB:%s", err.Error())
 	}
-	opt := option.WithCredentialsFile("../service-account-key.json")
+	opt := option.WithCredentialsFile(os.Getenv("service-account"))
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
 		log.Fatalf("Failed to create Firebase app: %v", err)

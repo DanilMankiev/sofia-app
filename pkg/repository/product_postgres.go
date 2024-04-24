@@ -38,10 +38,10 @@ func (it *ProductPostgres) CreateProduct(category_id int, input entity.CreatePro
 		return 0, err
 	}
 
-	query = fmt.Sprintf("INSERT INTO %s (name, category_id,category, description_preview,description_full,image_preview,image_all,composition,purchase,delivery, price) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING id", productTable)
+	query = fmt.Sprintf("INSERT INTO %s (name, category_id,category, description_preview,description_full,image_preview,image_all,composition,purchase,delivery, price,furniture) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING id", productTable)
 
 	
-	row := it.db.QueryRow(query, input.Name, category_id, category_name, input.DescriptionPreview, input.FullDescription, input.ImagePreview, input.AllImages, input.Composition, input.TermsPurchase, input.Delivery, input.Price)
+	row := it.db.QueryRow(query, input.Name, category_id, category_name, input.DescriptionPreview, input.FullDescription, input.ImagePreview, input.AllImages, input.Composition, input.TermsPurchase, input.Delivery, input.Price,input.Furniture) // TODO
 
 	if err := row.Scan(&product_id); err != nil {
 		return 0, err
@@ -127,6 +127,11 @@ func (it *ProductPostgres) UpdateItem(product_id int, input entity.UpdateProduct
 	if input.Name != nil {
 		setValues = append(setValues, fmt.Sprintf("name=$%d", argId))
 		args = append(args, *input.Name)
+		argId++
+	}
+	if input.Furniture != nil {
+		setValues = append(setValues, fmt.Sprintf("furniture=$%d", argId))
+		args = append(args, *&input.Furniture)
 		argId++
 	}
 

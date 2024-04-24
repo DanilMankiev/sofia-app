@@ -47,9 +47,6 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			images := products.Group(":id/images")
 			{
 				images.POST("/", h.createImage)
-				images.GET("/", h.getAllImages)
-				images.GET("/:im_id", h.getImageById)
-				images.PUT("/:im_id", h.updateImage)
 				images.DELETE("/:im_id", h.deleteImage)
 			}
 		}
@@ -80,7 +77,6 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			}
 
 		}
-		api.Static("/stat-images","./images")
 		api.Static("/image","./image")
 		
 	}

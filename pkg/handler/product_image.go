@@ -44,8 +44,8 @@ func (h *Handler) createImage(c *gin.Context) {
 		return
 	}
 	defer targetFile.Close()
-	host:= "http://localhost:8000/api"
-	imageURL:= fmt.Sprintf("%s/%s/%s",host, path, fileName)
+	statichost:= os.Getenv("statichost")
+	imageURL:= fmt.Sprintf("%s/%s/%s",statichost, path, fileName)
 	_, err = io.Copy(targetFile, file)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
@@ -136,87 +136,87 @@ func (h *Handler) createImage(c *gin.Context) {
 
 
 
-func (h *Handler) getAllImages(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		newErrorResponse(c, http.StatusBadRequest, "invalid id param")
-		return
-	}
+// func (h *Handler) getAllImages(c *gin.Context) {
+// 	id, err := strconv.Atoi(c.Param("id"))
+// 	if err != nil {
+// 		newErrorResponse(c, http.StatusBadRequest, "invalid id param")
+// 		return
+// 	}
 
-	imagePaths, err := h.services.ProductImage.GetAllImages(id)
-	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-	}
+// 	imagePaths, err := h.services.ProductImage.GetAllImages(id)
+// 	if err != nil {
+// 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+// 	}
 
-	boundary := "boundary"
+// 	boundary := "boundary"
 
-	// Для каждого пути к изображению
-	for _, imagePath := range imagePaths {
-		// Открываем файл изображения
-		image, err := os.Open(imagePath)
-		if err != nil {
-			newErrorResponse(c, http.StatusInternalServerError, err.Error())
-			return
-		}
-		defer image.Close()
+// 	// Для каждого пути к изображению
+// 	for _, imagePath := range imagePaths {
+// 		// Открываем файл изображения
+// 		image, err := os.Open(imagePath)
+// 		if err != nil {
+// 			newErrorResponse(c, http.StatusInternalServerError, err.Error())
+// 			return
+// 		}
+// 		defer image.Close()
 
-		// Записываем границу между частями multipart
-		_, _ = c.Writer.Write([]byte("--" + boundary + "\n"))
+// 		// Записываем границу между частями multipart
+// 		_, _ = c.Writer.Write([]byte("--" + boundary + "\n"))
 
-		// _, _ = c.Writer.Write([]byte("Content-Type: image/jpeg\n\n"))
+// 		// _, _ = c.Writer.Write([]byte("Content-Type: image/jpeg\n\n"))
 
-		// Копируем содержимое изображения в ResponseWriter
-		if _, err := io.Copy(c.Writer, image); err != nil {
-			newErrorResponse(c, http.StatusInternalServerError, err.Error())
-			return
-		}
+// 		// Копируем содержимое изображения в ResponseWriter
+// 		if _, err := io.Copy(c.Writer, image); err != nil {
+// 			newErrorResponse(c, http.StatusInternalServerError, err.Error())
+// 			return
+// 		}
 
-		// // Записываем новую строку после каждого изображения
-		_, _ = c.Writer.Write([]byte("\n"))
-	}
+// 		// // Записываем новую строку после каждого изображения
+// 		_, _ = c.Writer.Write([]byte("\n"))
+// 	}
 
-	// // Записываем последнюю границу multipart
-	_, _ = c.Writer.Write([]byte("--" + boundary + "--"))
+// 	// // Записываем последнюю границу multipart
+// 	_, _ = c.Writer.Write([]byte("--" + boundary + "--"))
 
-}
+// }
 
-func (h *Handler) getImageById(c *gin.Context) {
+// func (h *Handler) getImageById(c *gin.Context) {
 
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		newErrorResponse(c, http.StatusBadRequest, "invalid id param")
-		return
-	}
+// 	id, err := strconv.Atoi(c.Param("id"))
+// 	if err != nil {
+// 		newErrorResponse(c, http.StatusBadRequest, "invalid id param")
+// 		return
+// 	}
 
-	im_id, err := strconv.Atoi(c.Param("im_id"))
-	if err != nil {
-		newErrorResponse(c, http.StatusBadRequest, "invalid im_id param")
-		return
-	}
+// 	im_id, err := strconv.Atoi(c.Param("im_id"))
+// 	if err != nil {
+// 		newErrorResponse(c, http.StatusBadRequest, "invalid im_id param")
+// 		return
+// 	}
 
-	imagePath, err := h.services.ProductImage.GetImageById(id, im_id)
-	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-		return
-	}
+// 	imagePath, err := h.services.ProductImage.GetImageById(id, im_id)
+// 	if err != nil {
+// 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+// 		return
+// 	}
 
-	image, err := os.Open(imagePath)
-	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-		return
-	}
-	defer image.Close()
+// 	image, err := os.Open(imagePath)
+// 	if err != nil {
+// 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+// 		return
+// 	}
+// 	defer image.Close()
 
-	if _, err := io.Copy(c.Writer, image); err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-		return
-	}
+// 	if _, err := io.Copy(c.Writer, image); err != nil {
+// 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+// 		return
+// 	}
 
-}
+// }
 
-func (h *Handler) updateImage(c *gin.Context) {
+// func (h *Handler) updateImage(c *gin.Context) {
 
-}
+// }
 
 func (h *Handler) deleteImage(c *gin.Context) {
 	im_id, err := strconv.Atoi(c.Param("im_id"))
@@ -224,8 +224,13 @@ func (h *Handler) deleteImage(c *gin.Context) {
 		newErrorResponse(c, http.StatusBadRequest, "invalid im_id param")
 		return
 	}
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, "invalid im_id param")
+		return
+	}
 
-	err = h.services.ProductImage.DeleteImage(im_id)
+	err = h.services.ProductImage.DeleteImage(im_id,id)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return

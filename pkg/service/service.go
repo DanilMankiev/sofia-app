@@ -28,9 +28,7 @@ type Product interface {
 
 type ProductImage interface {
 	CreateImage(input entity.ImageInput) error
-	GetAllImages(product_id int) ([]string, error)
-	GetImageById(product_id int, image_id int) (string, error)
-	DeleteImage(image_id int) error
+	DeleteImage(image_id int, prouct_id int) error
 }
 
 type Review interface {

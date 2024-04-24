@@ -10,7 +10,6 @@ const (
 	usersTable         = "users"
 	categoryTable      = "categories"
 	productTable       = "products"
-	productImagesTable = "product_images"
 	reviewTable        = "reviews"
 	blogTable          = "blogs"
 	blogImagesTable    = "blog_images"
