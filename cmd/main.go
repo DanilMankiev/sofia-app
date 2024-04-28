@@ -5,7 +5,6 @@ import (
 	_ "database/sql"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"syscall"
 
 	firebase "firebase.google.com/go/v4"
@@ -31,32 +30,27 @@ import (
 func main() {
 
 	logrus.SetFormatter(new(logrus.JSONFormatter))
-	// if err := initConfig(); err != nil {
-	// 	logrus.Fatalf("Error initializing configs:%s", err.Error())
-	// }
-
-	_, err := filepath.Abs(filepath.Dir(os.Args[0]))
-
-	if err != nil {
-		logrus.Fatalf("Error loading env variables: %s", err.Error())
+	if err := initConfig(); err != nil {
+		logrus.Fatalf("Error initializing configs:%s", err.Error())
 	}
 
-	if err = godotenv.Load("../.env"); err != nil {
+
+	if err := godotenv.Load("../.env"); err != nil {
 		logrus.Fatalf("error loading .env")
 	}
 
 	db, err := repository.NewPostgresDB(repository.Config{
-		Host:     os.Getenv("host"),
-		Port:     os.Getenv("port"),
-		Username: os.Getenv("username"),
-		DBname:   os.Getenv("dbname"),
-		SSLMode:  os.Getenv("sslmode"),
+		Host:     viper.GetString("db.host"),
+		Port:    viper.GetString("db.port"),
+		Username: viper.GetString("db.username"),
+		DBname:   viper.GetString("db.dbname"),
+		SSLMode:  viper.GetString("db.sslmode"),
 		Password: os.Getenv("DB_PASSWORD"),
 	})
 	if err != nil {
 		logrus.Fatalf("Failed to init DB:%s", err.Error())
 	}
-	opt := option.WithCredentialsFile(os.Getenv("service-account"))
+	opt := option.WithCredentialsFile(viper.GetString("service-account"))
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
 		log.Fatalf("Failed to create Firebase app: %v", err)
@@ -75,7 +69,7 @@ func main() {
 	srv := new(sofia.Server)
 
 	go func() {
-		if err := srv.Run(os.Getenv("ports"), handlers.InitRoutes()); err != nil {
+		if err := srv.Run(viper.GetString("port"), handlers.InitRoutes()); err != nil {
 			logrus.Fatalf("error occured while running http server: %s", err.Error())
 		}
 	}()

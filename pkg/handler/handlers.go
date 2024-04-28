@@ -70,15 +70,11 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			images := blog.Group(":id/images")
 			{
 				images.POST("/", h.createBlogImage)
-				images.GET("/", h.getAllBlogImages)
-				images.GET("/:im_id", h.getBlogImageById)
-				images.PUT("/:im_id", h.updateBlogImage)
 				images.DELETE("/:im_id", h.deleteBlogImage)
 			}
 
 		}
 		api.Static("/image","./image")
-		
 	}
 	return router
 }

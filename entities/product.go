@@ -39,8 +39,8 @@ type UpdateProductInput struct {
 	Name               *string         `json:"name"`
 	CategoryId         *string         `json:"category_id"`
 	CategoryName       *string         `json:"category_name"`
-	DescriptionPreview *string         `json:"descriptio_preview"`
-	FullDescription    *string         `json:"descriptio_full"`
+	DescriptionPreview *string         `json:"description_preview"`
+	FullDescription    *string         `json:"description_full"`
 	ImgaePreview       *string         `json:"iamge_preview"`
 	AllImages          *pq.StringArray `json:"iamge_all"`
 	Composition        *string         `json:"composition"`
