@@ -3,3 +3,4 @@
 dist/
 .goreleaser.yaml
 service-account-key.json
+cmd/image

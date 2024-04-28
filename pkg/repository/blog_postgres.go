@@ -21,9 +21,9 @@ func NewBlogPostgres(db *sqlx.DB) *BlogPostgres{
 func(bp *BlogPostgres) CreateBlog(input entity.CreateBlog) (int,error){
 	var id int 
 
-	query:=fmt.Sprintf("INSERT INTO %s (topic,description) values ($1,$2) RETURNING id", blogTable)
+	query:=fmt.Sprintf("INSERT INTO %s (topic,description_preview,description_full,image_preview,image_all) values ($1,$2,$3,$4,$5) RETURNING id", blogTable)
 
-	row:=bp.db.QueryRow(query,input.Topic,input.Description)
+	row:=bp.db.QueryRow(query,input.Topic,input.Description_preview,input.Description_full,input.Image_preview,input.Image_all)
 
 	if err:=row.Scan(&id);err!=nil{
 		return 0,err
@@ -70,9 +70,14 @@ func (bp *BlogPostgres) UpdateBlog(id int, input entity.UpdateBlog) error {
 		args = append(args, *input.Topic)
 		argId++
 	}
-	if input.Description != nil {
-		setValues = append(setValues, fmt.Sprintf("description=$%d", argId))
-		args = append(args, *input.Description)
+	if input.Description_full != nil {
+		setValues = append(setValues, fmt.Sprintf("description_full=$%d", argId))
+		args = append(args, *input.Description_full)
+		argId++
+	}
+	if input.Description_preview != nil {
+		setValues = append(setValues, fmt.Sprintf("description_preview=$%d", argId))
+		args = append(args, *input.Description_preview)
 		argId++
 	}
 	setQuery := strings.Join(setValues, ",")

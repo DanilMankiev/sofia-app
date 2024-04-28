@@ -6,15 +6,20 @@ import (
 	"net/http"
 	"os"
 
-	"time"
-
+	"github.com/lib/pq"
 	"strconv"
 
 	entity "github.com/DanilMankiev/sofia-app/entities"
 	"github.com/gin-gonic/gin"
+	
+	
+	"github.com/spf13/viper"
+	
 )
 
 func (h *Handler) createImage(c *gin.Context) {
+
+	var imageURL pq.StringArray
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -22,37 +27,44 @@ func (h *Handler) createImage(c *gin.Context) {
 		return
 	}
 
-	file, _, err := c.Request.FormFile("image")
-	if err != nil {
-		http.Error(c.Writer, err.Error(), http.StatusBadRequest)
-		return
+	form, err := c.MultipartForm()
+	images := form.File["image"]
+
+	for i, file := range images {
+		openedFile, err := file.Open()
+		if err != nil {
+			newErrorResponse(c, http.StatusBadRequest, "Cant open image/file")
+		}
+		fileName := fmt.Sprintf("%s.jpg", randomFilename())
+		path := fmt.Sprintf("%s/%d", viper.GetString("pathProductImage"), id)
+
+		if err := os.MkdirAll(path, 0755); err != nil {
+			newErrorResponse(c, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		fullNamePath := fmt.Sprintf("%s/%s", path, fileName)
+		targetFile, err := os.OpenFile(fullNamePath, os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			newErrorResponse(c, http.StatusInternalServerError, err.Error())
+			return
+		}
+		defer targetFile.Close()
+		imageURL = append(imageURL, fmt.Sprintf("%s/%s/%s", viper.GetString("statichost"), path, fileName))
+		_, err = io.Copy(targetFile, openedFile)
+		if err != nil {
+			newErrorResponse(c, http.StatusInternalServerError, err.Error())
+			return
+		}
+		if i ==0 {
+			err:=h.services.ProductImage.CreatePreviewImage(imageURL[0],id)
+			if err!=nil{
+				newErrorResponse(c,http.StatusInternalServerError,err.Error())
+			}
+		}
 	}
 
-	defer file.Close()
-	fileName := fmt.Sprintf("%d.jpg",time.Now().Unix())
-	path := fmt.Sprintf("%s/%d",os.Getenv("pathProductImage"),id)
-	
-	if err := os.MkdirAll(path, 0755); err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	fullNamePath := fmt.Sprintf("%s/%s",path, fileName)
-	targetFile, err := os.OpenFile(fullNamePath, os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-		return
-	}
-	defer targetFile.Close()
-	statichost:= os.Getenv("statichost")
-	imageURL:= fmt.Sprintf("%s/%s/%s",statichost, path, fileName)
-	_, err = io.Copy(targetFile, file)
-	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	err = h.services.ProductImage.CreateImage(entity.ImageInput{Product_id: id, Image: imageURL})
+	err = h.services.ProductImage.CreateImage(entity.ImageInputProduct{Product_id: id, Image: imageURL})
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 	}
@@ -60,8 +72,55 @@ func (h *Handler) createImage(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"imageURL": imageURL,
 	})
+}
 
-// Вариант 2 
+	// func (h *Handler) createImage(c *gin.Context) {
+
+	// 	id, err := strconv.Atoi(c.Param("id"))
+	// 	if err != nil {
+	// 		newErrorResponse(c, http.StatusBadRequest, "inavlid id param")
+	// 		return
+	// 	}
+
+	// 	file, _, err := c.Request.FormFile("image")
+	// 	if err != nil {
+	// 		http.Error(c.Writer, err.Error(), http.StatusBadRequest)
+	// 		return
+	// 	}
+
+	// 	defer file.Close()
+	// 	fileName := fmt.Sprintf("%d.jpg",time.Now().Unix())
+	// 	path := fmt.Sprintf("%s/%d",viper.GetString("pathProductImage"),id)
+
+	// 	if err := os.MkdirAll(path, 0755); err != nil {
+	// 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+	// 		return
+	// 	}
+
+	// 	fullNamePath := fmt.Sprintf("%s/%s",path, fileName)
+	// 	targetFile, err := os.OpenFile(fullNamePath, os.O_CREATE|os.O_WRONLY, 0644)
+	// 	if err != nil {
+	// 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+	// 		return
+	// 	}
+	// 	defer targetFile.Close()
+	// 	imageURL:= fmt.Sprintf("%s/%s/%s",viper.GetString("statichost"), path, fileName)
+	// 	_, err = io.Copy(targetFile, file)
+	// 	if err != nil {
+	// 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+	// 		return
+	// 	}
+
+	// 	err = h.services.ProductImage.CreateImage(entity.ImageInput{Product_id: id, Image: imageURL})
+	// 	if err != nil {
+	// 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+	// 	}
+
+	// 	c.JSON(http.StatusOK, map[string]interface{}{
+	// 		"imageURL": imageURL,
+	// 	})
+
+	// Вариант 2
 	// извлекаем id продукта и создаем директорию
 	// productId, err := strconv.Atoi(c.Param("id"))
 	// if err != nil {
@@ -87,7 +146,7 @@ func (h *Handler) createImage(c *gin.Context) {
 	// for key := range form.File {
 	// 	fileName = key
 	// 	// извлекаем расширение файла
-	
+
 	// 	fmt.Println(str)
 	// 	arr := strings.Split(fileName, ".")
 	// 	if len(arr) > 1 {
@@ -130,9 +189,6 @@ func (h *Handler) createImage(c *gin.Context) {
 	// c.JSON(http.StatusOK, map[string]interface{}{
 	// 	 	"imageURL": fullFileName,
 	// 	 })
-	
-}
-
 
 
 
@@ -230,7 +286,7 @@ func (h *Handler) deleteImage(c *gin.Context) {
 		return
 	}
 
-	err = h.services.ProductImage.DeleteImage(im_id,id)
+	err = h.services.ProductImage.DeleteImage(im_id, id)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return

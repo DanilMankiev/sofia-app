@@ -6,3 +6,8 @@ db:
     port: "5436"
     dbname: "my-db"
     sslmode: "disable"
+
+statichost: "http://localhost:8000/api"
+pathBlogImage: "image/blog"
+pathProductImage: "image/product"
+service-account: "../service-account-key.json"

@@ -12,7 +12,6 @@ const (
 	productTable       = "products"
 	reviewTable        = "reviews"
 	blogTable          = "blogs"
-	blogImagesTable    = "blog_images"
 )
 
 type Config struct {

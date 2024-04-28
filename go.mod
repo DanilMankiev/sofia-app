@@ -5,15 +5,15 @@ go 1.21.3
 require (
 	firebase.google.com/go/v4 v4.14.0
 	github.com/gin-gonic/gin v1.9.1
-	github.com/golang-jwt/jwt v3.2.2+incompatible
-	github.com/google/go-querystring v1.1.0
 	github.com/google/uuid v1.6.0
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
+	github.com/oklog/ulid v1.3.1
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/viper v1.18.2
 	golang.org/x/crypto v0.22.0
+	google.golang.org/api v0.170.0
 )
 
 require (
@@ -79,7 +79,6 @@ require (
 	golang.org/x/sys v0.19.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
-	google.golang.org/api v0.170.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/appengine/v2 v2.0.2 // indirect
 	google.golang.org/genproto v0.0.0-20240213162025-012b6fc9bca9 // indirect

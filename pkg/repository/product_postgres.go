@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -131,7 +132,7 @@ func (it *ProductPostgres) UpdateItem(product_id int, input entity.UpdateProduct
 	}
 	if input.Furniture != nil {
 		setValues = append(setValues, fmt.Sprintf("furniture=$%d", argId))
-		args = append(args, *&input.Furniture)
+		args = append(args, *input.Furniture)
 		argId++
 	}
 
@@ -142,6 +143,8 @@ func (it *ProductPostgres) UpdateItem(product_id int, input entity.UpdateProduct
 	args = append(args, product_id)
 
 	_, err := it.db.Exec(query, args...)
-
+	if err!=nil{
+		return errors.New(err.Error())
+	}
 	return err
 }

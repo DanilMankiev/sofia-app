@@ -27,8 +27,9 @@ type Product interface {
 }
 
 type ProductImage interface {
-	CreateImage(input entity.ImageInput) error
+	CreateImage(input entity.ImageInputProduct) error
 	DeleteImage(image_id int, prouct_id int) error
+	CreatePreviewImage(url string,id int) error
 }
 
 type Review interface {
@@ -48,9 +49,8 @@ type Blog interface {
 
 type BlogImage interface {
 	CreateImage(input entity.ImageInputBlog) error
-	GetAllImages(id int) ([]string, error)
-	GetImageById(id int, image_id int) (string, error)
 	DeleteImage(image_id int) error
+	CreatePreviewImage(url string,id int) error
 }
 
 type Service struct {
