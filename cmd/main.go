@@ -7,8 +7,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	firebase "firebase.google.com/go/v4"
 	"log"
+
+	firebase "firebase.google.com/go/v4"
 	"github.com/sirupsen/logrus"
 
 	_ "github.com/jmoiron/sqlx"
@@ -22,9 +23,7 @@ import (
 	"github.com/DanilMankiev/sofia-app/pkg/service"
 	"github.com/spf13/viper"
 
-
 	"google.golang.org/api/option"
-	
 )
 
 func main() {
@@ -34,14 +33,13 @@ func main() {
 		logrus.Fatalf("Error initializing configs:%s", err.Error())
 	}
 
-
 	if err := godotenv.Load("../.env"); err != nil {
 		logrus.Fatalf("error loading .env")
 	}
 
 	db, err := repository.NewPostgresDB(repository.Config{
 		Host:     viper.GetString("db.host"),
-		Port:    viper.GetString("db.port"),
+		Port:     viper.GetString("db.port"),
 		Username: viper.GetString("db.username"),
 		DBname:   viper.GetString("db.dbname"),
 		SSLMode:  viper.GetString("db.sslmode"),
@@ -51,7 +49,8 @@ func main() {
 		logrus.Fatalf("Failed to init DB:%s", err.Error())
 	}
 	opt := option.WithCredentialsFile(viper.GetString("service-account"))
-	app, err := firebase.NewApp(context.Background(), nil, opt)
+	config := &firebase.Config{ProjectID: "sofia-app-f342f"}
+	app, err := firebase.NewApp(context.Background(), config, opt)
 	if err != nil {
 		log.Fatalf("Failed to create Firebase app: %v", err)
 	}
@@ -61,9 +60,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to create Firebase auth client: %v", err)
 	}
-
-	repos := repository.NewRepository(db, authClient)
-	services := service.NewService(repos)
+	//
+	//
+	repos := repository.NewRepository(db)
+	services := service.NewService(repos,authClient)
 	handlers := handler.NewHandeler(services)
 
 	srv := new(sofia.Server)
@@ -90,10 +90,6 @@ func main() {
 		logrus.Errorf("error occured on db connection close: %s", err.Error())
 	}
 
-	_,err=firebase.NewApp(context.Background(),nil)
-	if err!=nil{
-		log.Fatalf("error initalizing app: %v\n", err)
-	}
 }
 
 func initConfig() error {
