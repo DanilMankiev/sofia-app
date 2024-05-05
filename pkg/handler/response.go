@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-type error struct {
+type Error struct {
 	Message string `json:message`
 }
 
@@ -20,7 +20,7 @@ type statusResponse struct {
 
 func newErrorResponse(c *gin.Context, statusCode int, message string) {
 	logrus.Error(message)
-	c.AbortWithStatusJSON(statusCode, error{message})
+	c.AbortWithStatusJSON(statusCode, Error{message})
 }
 
 func randomFilename() string {

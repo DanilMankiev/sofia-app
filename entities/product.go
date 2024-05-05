@@ -9,7 +9,7 @@ import (
 type Product struct {
 	Id                 int            `json:"id" db:"id"`
 	Name               string         `json:"name" binding:"required"`
-	CategoryId         string         `json:"category_id" db:"category_id"`
+	CategoryId         int         `json:"category_id" db:"category_id"`
 	CategoryName       string         `json:"category_name" db:"category"`
 	DescriptionPreview string         `json:"description_preview" binding:"required" db:"description_preview"`
 	FullDescription    string         `json:"description_full" binding:"required" db:"description_full"`

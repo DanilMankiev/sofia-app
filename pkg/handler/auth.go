@@ -1,16 +1,11 @@
 package handler
 
 import (
-	
 	"net/http"
 
 	entity "github.com/DanilMankiev/sofia-app/entities"
 	"github.com/gin-gonic/gin"
-	
 )
-
-
-
 
 func (h *Handler) signUp(c *gin.Context) {
 	var input entity.SignUpInput
@@ -23,12 +18,14 @@ func (h *Handler) signUp(c *gin.Context) {
 		newErrorResponse(c,http.StatusBadRequest, "Email,password,name,phone are required")
 	}
 
-	customToken, err := h.services.Authorization.SignUp(input)
+	err := h.services.Authorization.SignUp(input)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 	}
 
-	c.JSON(http.StatusOK, gin.H{"token": customToken})
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"Status":"OK",
+	})
 }
 
 type SignInInput struct {

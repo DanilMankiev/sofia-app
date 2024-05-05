@@ -1,13 +1,18 @@
 package service
 
 import (
+	
+
+	"firebase.google.com/go/v4/auth"
 	entity "github.com/DanilMankiev/sofia-app/entities"
 	"github.com/DanilMankiev/sofia-app/pkg/repository"
 )
 
 type Authorization interface {
-	SignUp(user entity.SignUpInput) (string, error)
+	SignUp(user entity.SignUpInput) error
 	SignIn(entity.SignInInput) (string, error)
+	ParseToken(token string) (string,error)
+
 }
 
 type Category interface {
@@ -63,9 +68,9 @@ type Service struct {
 	Blog
 }
 
-func NewService(repos *repository.Repository) *Service {
+func NewService(repos *repository.Repository,FireAuth *auth.Client) *Service {
 	return &Service{
-		Authorization:      newAuthService(repos.Authorization),
+		Authorization:      newAuthService(repos.Authorization, FireAuth),
 		Category: newCategoryService(repos.Category),
 		Product:            newProductService(repos.Product, repos.Category),
 		ProductImage:       newProductImageService(repos.ProductImage),

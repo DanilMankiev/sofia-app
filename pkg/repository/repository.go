@@ -1,14 +1,13 @@
 package repository
 
 import (
-	"firebase.google.com/go/v4/auth"
 
 	entity "github.com/DanilMankiev/sofia-app/entities"
 	"github.com/jmoiron/sqlx"
 )
 
 type Authorization interface {
-	SignUp(user entity.SignUpInput) (string, error)
+	SignUp(user entity.SignUpInput,uid string) error
 	SignIn(input entity.SignInInput) (string, error)
 }
 
@@ -65,9 +64,9 @@ type Repository struct {
 	BlogImage
 }
 
-func NewRepository(db *sqlx.DB, FireAuth *auth.Client) *Repository {
+func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{
-		Authorization: NewAuthPostgres(db, FireAuth),
+		Authorization: NewAuthPostgres(db),
 		Category:      NewCategoryPostgres(db),
 		Product:       NewProductPostgres(db),
 		ProductImage:  NewProductImagePostgres(db),

@@ -22,7 +22,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		auth.POST("/sign-in", h.signIn)
 	}
 
-	api := router.Group("/api")
+	api := router.Group("/api",h.userIdentity)
 	{
 		categorys := api.Group("/category")
 		{
@@ -38,7 +38,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 				products.POST("/", h.createProduct)
 			}
 		}
-		products := api.Group("product")
+		products := api.Group("products")
 		{
 			products.GET("/:id", h.getItemById)
 			products.PUT("/:id", h.updateItem)
