@@ -30,25 +30,25 @@ func (h *Handler) userIdentity(c *gin.Context) {
 		return
 	}
 
-	userId, err := h.services.Authorization.ParseToken(headerParts[1])
+	userUID, err := h.services.Authorization.ParseToken(headerParts[1])
 	if err != nil {
 		newErrorResponse(c, http.StatusUnauthorized, err.Error())
 		return
 	}
 
-	c.Set(userCtx, userId)
+	c.Set(userCtx, userUID)
 }
 
-func getUserId(c *gin.Context) (string, error) {
-	id, ok := c.Get(userCtx)
+func getUserUID(c *gin.Context) (string, error) {
+	uid, ok := c.Get(userCtx)
 	if !ok {
 		return "", errors.New("user id not found")
 	}
-	idInt, ok := id.(string)
+	UIDstr, ok := uid.(string)
 	if !ok {
 		return "", errors.New("user id is of invalid type")
 	}
 
-	return idInt, nil
+	return UIDstr, nil
 
 }
