@@ -10,7 +10,7 @@ type Blog struct{
 	Description_preview string `json:"description_preview" db:"description_preview" binding:"required"`
 	Description_full string `json:"description_full" db:"description_full" binding:"required"`
 	Image_preview string `json:"image_preview" db:"image_preview" binding:"required"`
-	Image_all pq.StringArray `json:"image_all" db:"image_all" binding:"required"`
+	Image_all pq.StringArray `json:"image_all" db:"image_all" binding:"required" swaggertype:"array,string"`
 }
 
 type CreateBlog struct{
@@ -18,7 +18,7 @@ type CreateBlog struct{
 	Description_preview string `json:"description_preview" binding:"required"`
 	Description_full string `json:"description_full" binding:"required"`
 	Image_preview string `json:"image_preview"`
-	Image_all pq.StringArray `json:"image_all"`
+	Image_all pq.StringArray `json:"image_all" swaggertype:"array,string"`
 }
 
 type UpdateBlog struct{

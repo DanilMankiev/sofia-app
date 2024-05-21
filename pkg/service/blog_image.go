@@ -17,8 +17,8 @@ func (bs *BlogImageService) CreateImage(input entity.ImageInputBlog) error {
 	return bs.repo.CreateImage(input)
 }
 
-func (bs *BlogImageService) DeleteImage(image_id int) error {
-	return bs.repo.DeleteImage(image_id)
+func (bs *BlogImageService) DeleteImage(id int) error {
+	return bs.repo.DeleteImage(id)
 }
 
 func(bs * BlogImageService) CreatePreviewImage(url string,id int) error{

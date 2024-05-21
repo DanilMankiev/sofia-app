@@ -16,7 +16,7 @@ func NewCategoryPostgres(db *sqlx.DB) *CategoryPostgres {
 	return &CategoryPostgres{db: db}
 }
 
-func (l *CategoryPostgres) CreateCategory(Category entity.Category) (int, error) {
+func (l *CategoryPostgres) CreateCategory(Category entity.CreateCategory) (int, error) {
 	var Category_id int
 
 	query := fmt.Sprintf("INSERT INTO %s (name,description) values ($1,$2) RETURNING id", categoryTable)

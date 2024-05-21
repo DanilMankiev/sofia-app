@@ -14,7 +14,7 @@ type Product struct {
 	DescriptionPreview string         `json:"description_preview" binding:"required" db:"description_preview"`
 	FullDescription    string         `json:"description_full" binding:"required" db:"description_full"`
 	ImgaePreview       string         `json:"image_preview" db:"image_preview"`
-	AllImages          pq.StringArray `json:"image_all" db:"image_all"`
+	AllImages          pq.StringArray `json:"image_all" db:"image_all" swaggertype:"array,string"`
 	Composition        string         `json:"composition" binding:"required" db:"composition"`
 	TermsPurchase      string         `json:"purchase" binding:"required" db:"purchase"`
 	Delivery           string         `json:"delivery" binding:"required" db:"delivery"`
@@ -27,7 +27,7 @@ type CreateProduct struct {
 	DescriptionPreview string         `json:"description_preview" binding:"required"`
 	FullDescription    string         `json:"description_full" binding:"required"`
 	ImagePreview       string         `json:"image_preview"`
-	AllImages          pq.StringArray `json:"image_all"`
+	AllImages          pq.StringArray `json:"image_all" swaggertype:"array,string"`
 	Composition        string         `json:"composition" binding:"required"`
 	TermsPurchase      string         `json:"purchase" binding:"required"`
 	Delivery           string         `json:"delivery" binding:"required"`
@@ -41,8 +41,6 @@ type UpdateProductInput struct {
 	CategoryName       *string         `json:"category_name"`
 	DescriptionPreview *string         `json:"description_preview"`
 	FullDescription    *string         `json:"description_full"`
-	ImgaePreview       *string         `json:"iamge_preview"`
-	AllImages          *pq.StringArray `json:"iamge_all"`
 	Composition        *string         `json:"composition"`
 	TermsPurchase      *string         `json:"purchase"`
 	Delivery           *string         `json:"delivery"`
@@ -51,7 +49,7 @@ type UpdateProductInput struct {
 }
 
 func (up UpdateProductInput) Validate() error {
-	if up.Name == nil {
+	if up.Name == nil && up.CategoryId == nil && up.CategoryName == nil && up.DescriptionPreview == nil && up.FullDescription == nil && up.Composition== nil && up.TermsPurchase == nil && up.Delivery == nil && up.Furniture == nil && up.Price == nil{
 		return errors.New("update item no valiable") // TODO
 	}
 	return nil
