@@ -8,6 +8,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+//	@Summary		Get all product 
+//	@Description	Get all product API
+//	@Tags			product
+//  @ID 			get all products api
+//	@Accept			json
+//	@Produce		json
+// @Security ApiKeyAuth
+//  @Param id path int true "Category id"
+//	@Success		200	{object}    []entity.Product
+//	@Failure		400	{object}	errorResponse
+//	@Failure		404	{object}	errorResponse
+//	@Failure		500	{object}	errorResponse
+// @Router /api/category/{id}/products [get]
 func (h *Handler) getAllProducts(c *gin.Context) {
 	category_id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -24,6 +37,21 @@ func (h *Handler) getAllProducts(c *gin.Context) {
 
 }
 
+
+//	@Summary		Create product 
+//	@Description	Create product API
+//	@Tags			product
+//  @ID 			create products api
+//	@Accept			json
+//	@Produce		json
+// @Security ApiKeyAuth
+//  @Param id path integer true "Category id"
+//  @Param input body entity.CreateProduct true "Create product input"
+//	@Success		200	{object}    idResponse
+//	@Failure		400	{object}	errorResponse
+//	@Failure		404	{object}	errorResponse
+//	@Failure		500	{object}	errorResponse
+// @Router /api/category/{id}/products [post]
 func (h *Handler) createProduct(c *gin.Context) {
 
 	category_id, err := strconv.Atoi(c.Param("id"))
@@ -34,7 +62,7 @@ func (h *Handler) createProduct(c *gin.Context) {
 
 	var input entity.CreateProduct
 	if err := c.BindJSON(&input); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		newErrorResponse(c, http.StatusBadRequest, "invalid request body")
 		return
 	}
 	id, err := h.services.Product.CreateProduct(category_id, input)
@@ -42,12 +70,22 @@ func (h *Handler) createProduct(c *gin.Context) {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, map[string]interface{}{
-		"id": id,
-	})
-
+	c.JSON(http.StatusOK, idResponse{ID :id})
 }
 
+//	@Summary		Get product by id 
+//	@Description	Get product by id API
+//	@Tags			product
+//  @ID 			get product by id api
+//	@Accept			json
+//	@Produce		json
+// @Security ApiKeyAuth
+//  @Param id path int true "Product id"
+//	@Success		200	{object}    entity.Product
+//	@Failure		400	{object}	errorResponse
+//	@Failure		404	{object}	errorResponse
+//	@Failure		500	{object}	errorResponse
+// @Router /api/products/{id} [get]
 func (h *Handler) getItemById(c *gin.Context) {
 	product_id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -62,30 +100,61 @@ func (h *Handler) getItemById(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, product)
-
 }
 
+
+//	@Summary		Update product 
+//	@Description	Update product API
+//	@Tags			product
+//  @ID 			update product api
+//	@Accept			json
+//	@Produce		json
+// @Security ApiKeyAuth
+//  @Param id path int true "Product id"
+//  @Param input body entity.UpdateProductInput true "Product input"
+//	@Success		200	{object}    statusResponse
+//	@Failure		400	{object}	errorResponse
+//	@Failure		404	{object}	errorResponse
+//	@Failure		500	{object}	errorResponse
+// @Router /api/products/{id} [put]
 func (h *Handler) updateItem(c *gin.Context) {
 	var input entity.UpdateProductInput
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, "invalid id param")
-	}
-
-	if err := c.BindJSON(&input); err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	h.services.Product.UpdateItem(id, input)
+	if err := c.BindJSON(&input); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, "invalid request body")
+		return
+	}
+
+	if err = h.services.Product.UpdateItem(id, input); err!=nil{
+		newErrorResponse(c,http.StatusInternalServerError, err.Error())
+		return
+	}
 
 	c.JSON(http.StatusOK, statusResponse{
-		Status: "ok",
+		Status: "OK",
 	})
 
 }
 
+//	@Summary		Delete product 
+//	@Description	Delete product API
+//	@Tags			product
+//  @ID 			delete product api
+//	@Accept			json
+//	@Produce		json
+// @Security ApiKeyAuth
+//  @Param id path int true "Product id"
+//	@Success		200	{object}    statusResponse
+//	@Failure		400	{object}	errorResponse
+//	@Failure		404	{object}	errorResponse
+//	@Failure		500	{object}	errorResponse
+// @Router /api/products/{id} [delete]
 func (h *Handler) deleteItem(c *gin.Context) {
 	product_id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -98,7 +167,7 @@ func (h *Handler) deleteItem(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, statusResponse{
-		Status: "ok",
+		Status: "OK",
 	})
 
 }

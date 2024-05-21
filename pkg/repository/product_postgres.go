@@ -90,11 +90,6 @@ func (it *ProductPostgres) UpdateItem(product_id int, input entity.UpdateProduct
 		args = append(args, *input.Price)
 		argId++
 	}
-	if input.AllImages != nil {
-		setValues = append(setValues, fmt.Sprintf("iamge_all=$%d", argId))
-		args = append(args, *input.AllImages)
-		argId++
-	}
 	if input.Composition != nil {
 		setValues = append(setValues, fmt.Sprintf("composition=$%d", argId))
 		args = append(args, *input.Composition)
@@ -113,11 +108,6 @@ func (it *ProductPostgres) UpdateItem(product_id int, input entity.UpdateProduct
 	if input.FullDescription != nil {
 		setValues = append(setValues, fmt.Sprintf("description_full=$%d", argId))
 		args = append(args, *input.FullDescription)
-		argId++
-	}
-	if input.ImgaePreview != nil {
-		setValues = append(setValues, fmt.Sprintf("iamge_preview=$%d", argId))
-		args = append(args, *input.ImgaePreview)
 		argId++
 	}
 	if input.TermsPurchase != nil {

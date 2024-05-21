@@ -1,18 +1,25 @@
 package repository
 
 import (
-
 	entity "github.com/DanilMankiev/sofia-app/entities"
 	"github.com/jmoiron/sqlx"
 )
 
 type Authorization interface {
-	SignUp(user entity.SignUpInput,uid string) error
+	SignUp(user entity.SignUpInput, uid string) error
 	SignIn(input entity.SignInInput) (string, error)
+	CreateRefreshToken(uid string, refreshtoken string) error
+	ValidateToken(token string, uid string) (bool, error)
 }
 
+type User interface {
+	GetUser(uid string) (entity.UserDisplay,error)
+	CreateFavorites(uid string, id int) error
+	GetAllFavorites(uid string) ([]entity.Product,error)
+	DeleteFavorites(uid string, id int) error
+}
 type Category interface {
-	CreateCategory(category entity.Category) (int, error)
+	CreateCategory(category entity.CreateCategory) (int, error)
 	GetAllCategorys() ([]entity.Category, error)
 	GetCategoryById(id int) (entity.Category, error)
 	UpdateCategory(id int, input entity.UpdateCategoryInput) error
@@ -29,7 +36,7 @@ type Product interface {
 
 type ProductImage interface {
 	CreateImage(input entity.ImageInputProduct) error
-	DeleteImage(image_id int, prouct_id int) error
+	DeleteImage(prouct_id int) error
 	CreatePreviewImage(url string, id int) error
 }
 
@@ -50,8 +57,8 @@ type Blog interface {
 
 type BlogImage interface {
 	CreateImage(input entity.ImageInputBlog) error
-	DeleteImage(image_id int) error
-	CreatePreviewImage(url string,id int) error
+	DeleteImage(id int) error
+	CreatePreviewImage(url string, id int) error
 }
 
 type Repository struct {
@@ -62,6 +69,7 @@ type Repository struct {
 	Review
 	Blog
 	BlogImage
+	User
 }
 
 func NewRepository(db *sqlx.DB) *Repository {
@@ -73,5 +81,6 @@ func NewRepository(db *sqlx.DB) *Repository {
 		Review:        NewReviewPostgres(db),
 		Blog:          NewBlogPostgres(db),
 		BlogImage:     NewBlogImagePostgres(db),
+		User:          NewUserPostgres(db),
 	}
 }

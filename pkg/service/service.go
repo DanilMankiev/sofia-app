@@ -10,13 +10,21 @@ import (
 
 type Authorization interface {
 	SignUp(user entity.SignUpInput) error
-	SignIn(entity.SignInInput) (string, error)
+	SignIn(entity.SignInInput) (string,string, error)
 	ParseToken(token string) (string,error)
+	// GenerateTokens(uid string) (string,error)
+	RefreshToken(refreshToken string) (string,string,error)
+}
 
+type User interface {
+	GetUser(uid string) (entity.UserDisplay,error)
+	CreateFavorites(uid string, id int) error
+	DeleteFavorites(uid string,id int) error
+	GetAllFavorites(uid string) ([]entity.Product,error)
 }
 
 type Category interface {
-	CreateCategory(category entity.Category) (int, error)
+	CreateCategory(category entity.CreateCategory) (int, error)
 	GetAllCategorys() ([]entity.Category, error)
 	GetCategoryById(id int) (entity.Category, error)
 	UpdateCategory(id int, input entity.UpdateCategoryInput) error
@@ -33,7 +41,7 @@ type Product interface {
 
 type ProductImage interface {
 	CreateImage(input entity.ImageInputProduct) error
-	DeleteImage(image_id int, prouct_id int) error
+	DeleteImage(prouct_id int) error
 	CreatePreviewImage(url string,id int) error
 }
 
@@ -54,7 +62,7 @@ type Blog interface {
 
 type BlogImage interface {
 	CreateImage(input entity.ImageInputBlog) error
-	DeleteImage(image_id int) error
+	DeleteImage(id int) error
 	CreatePreviewImage(url string,id int) error
 }
 
@@ -66,6 +74,7 @@ type Service struct {
 	BlogImage
 	Review
 	Blog
+	User
 }
 
 func NewService(repos *repository.Repository,FireAuth *auth.Client) *Service {
@@ -77,5 +86,6 @@ func NewService(repos *repository.Repository,FireAuth *auth.Client) *Service {
 		Review:             newReviewService(repos.Review),
 		Blog:               newBlogService(repos.Blog),
 		BlogImage:          newBlogImageService(repos.BlogImage),
+		User: newUserService(repos.User),
 	}
 }

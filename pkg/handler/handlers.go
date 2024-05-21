@@ -1,8 +1,11 @@
 package handler
 
 import (
+	_ "github.com/DanilMankiev/sofia-app/docs"
 	"github.com/DanilMankiev/sofia-app/pkg/service"
 	"github.com/gin-gonic/gin"
+	"github.com/swaggo/files"       // swagger embed files
+	"github.com/swaggo/gin-swagger" // gin-swagger middleware
 )
 
 type Handler struct {
@@ -16,14 +19,25 @@ func NewHandeler(services *service.Service) *Handler {
 func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.New()
 
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	auth := router.Group("/auth")
 	{
 		auth.POST("/sign-up", h.signUp)
 		auth.POST("/sign-in", h.signIn)
+		auth.POST("/refresh", h.refresh)
 	}
-
 	api := router.Group("/api",h.userIdentity)
 	{
+		user := api.Group("/user")
+		{
+			user.GET("/", h.getUser)
+			favorites := user.Group("/favorites")
+			{
+				favorites.POST("/:id", h.createFavorites)
+				favorites.GET("/", h.getAllFavorites)
+				favorites.DELETE("/:id", h.deleteFavorites)
+			}
+		}
 		categorys := api.Group("/category")
 		{
 			categorys.POST("/", h.createCategory)
@@ -47,7 +61,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			images := products.Group(":id/images")
 			{
 				images.POST("/", h.createImage)
-				images.DELETE("/:im_id", h.deleteImage)
+				images.DELETE("/", h.deleteImage)
 			}
 		}
 
@@ -70,11 +84,11 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			images := blog.Group(":id/images")
 			{
 				images.POST("/", h.createBlogImage)
-				images.DELETE("/:im_id", h.deleteBlogImage)
+				images.DELETE("/", h.deleteBlogImage)
 			}
 
 		}
-		api.Static("/image","./image")
+		api.Static("/image", "./image")
 	}
 	return router
 }

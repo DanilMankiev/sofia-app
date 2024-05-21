@@ -10,18 +10,30 @@ import (
 	"time"
 )
 
-type Error struct {
-	Message string `json:message`
+type errorResponse struct {
+	Message string `json:"message"`
 }
 
 type statusResponse struct {
 	Status string `json:"status"`
 }
+type tokenResponse struct{
+	Token string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+}
+type imageURLResponse struct{
+	ImageURL []string `json:"imageurl"`
+}
+type idResponse struct{
+	ID int `json:"id"`
+}
+
 
 func newErrorResponse(c *gin.Context, statusCode int, message string) {
 	logrus.Error(message)
-	c.AbortWithStatusJSON(statusCode, Error{message})
+	c.AbortWithStatusJSON(statusCode, errorResponse{message})
 }
+
 
 func randomFilename() string {
 	t := time.Now()

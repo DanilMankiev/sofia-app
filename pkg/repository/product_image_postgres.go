@@ -26,9 +26,9 @@ func (pi *ProductImagePostgres) CreateImage(input entity.ImageInputProduct) erro
 }
 
 
-func (pi *ProductImagePostgres) DeleteImage(image_id int, prouct_id int) error {
-	query := fmt.Sprintf("UPDATE %s SET image_all = array_remove(image_all, image_all[array_length(image_all, 1)]) WHERE array_length(image_all, 1) > 0;",productTable)
-	_, err := pi.db.Exec(query)
+func (pi *ProductImagePostgres) DeleteImage(prouct_id int) error {
+	query := fmt.Sprintf("UPDATE %s SET image_all = array_remove(image_all, image_all[array_length(image_all, 1)]) WHERE array_length(image_all, 1) > 0 AND id=$1",productTable)
+	_, err := pi.db.Exec(query, prouct_id)
 	return err
 }
 

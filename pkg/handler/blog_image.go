@@ -13,6 +13,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+//	@Summary		Create Blog Image
+//	@Description	Blog image API
+//	@Tags			blog
+//  @ID 			createblog api
+//	@Accept			multipart/form-data
+//	@Produce		json
+// @Security ApiKeyAuth
+//  @Param id path int true "Blog ID"
+//  @Param image formData file true "Blog Images"
+//	@Success		200	{object}    imageURLResponse
+//	@Failure		400	{object}	errorResponse
+//	@Failure		404	{object}	errorResponse
+//	@Failure		500	{object}	errorResponse
+// @Router /api/blog/{id}/images [post]
 func (h *Handler) createBlogImage(c *gin.Context) {
 
 	var imageURL pq.StringArray
@@ -24,17 +38,22 @@ func (h *Handler) createBlogImage(c *gin.Context) {
 	}
 
 	form, err := c.MultipartForm()
+	if err!=nil{
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
 	images := form.File["image"]
 
 	for i, file := range images {
 		openedFile, err := file.Open()
 		if err != nil {
-			newErrorResponse(c, http.StatusBadRequest, "Cant open image/file")
+			newErrorResponse(c, http.StatusBadRequest, err.Error())
+			return
 		}
 		fileName := fmt.Sprintf("%s.jpg", randomFilename())
 		path := fmt.Sprintf("%s/%d", viper.GetString("pathBlogImage"), id)
 
-		if err := os.MkdirAll(path, 0755); err != nil {
+		if err := os.MkdirAll(path,0755); err != nil {
 			newErrorResponse(c, http.StatusInternalServerError, err.Error())
 			return
 		}
@@ -56,6 +75,7 @@ func (h *Handler) createBlogImage(c *gin.Context) {
 			err:=h.services.BlogImage.CreatePreviewImage(imageURL[0],id)
 			if err!=nil{
 				newErrorResponse(c,http.StatusInternalServerError,err.Error())
+				return
 			}
 		}
 	}
@@ -63,108 +83,37 @@ func (h *Handler) createBlogImage(c *gin.Context) {
 	err = h.services.BlogImage.CreateImage(entity.ImageInputBlog{Blog_id: id,Image: imageURL})
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-	}
-
-	c.JSON(http.StatusOK, map[string]interface{}{
-		"imageURL": imageURL,
-	})
-}
-
-// func (h *Handler) getAllBlogImages(c *gin.Context) {
-// 	id, err := strconv.Atoi(c.Param("id"))
-// 	if err != nil {
-// 		newErrorResponse(c, http.StatusBadRequest, "invalid id param")
-// 		return
-// 	}
-
-// 	imagePaths, err := h.services.BlogImage.GetAllImages(id)
-// 	if err != nil {
-// 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-// 	}
-
-// 	boundary := "boundary"
-
-// 	// Для каждого пути к изображению
-// 	for _, imagePath := range imagePaths {
-// 		// Открываем файл изображения
-// 		image, err := os.Open(imagePath)
-// 		if err != nil {
-// 			newErrorResponse(c, http.StatusInternalServerError, err.Error())
-// 			return
-// 		}
-// 		defer image.Close()
-
-// 		// Записываем границу между частями multipart
-// 		_, _ = c.Writer.Write([]byte("--" + boundary + "\n"))
-
-// 		// _, _ = c.Writer.Write([]byte("Content-Type: image/jpeg\n\n"))
-
-// 		// Копируем содержимое изображения в ResponseWriter
-// 		if _, err := io.Copy(c.Writer, image); err != nil {
-// 			newErrorResponse(c, http.StatusInternalServerError, err.Error())
-// 			return
-// 		}
-
-// 		// // Записываем новую строку после каждого изображения
-// 		_, _ = c.Writer.Write([]byte("\n"))
-// 	}
-
-// 	// // Записываем последнюю границу multipart
-// 	_, _ = c.Writer.Write([]byte("--" + boundary + "--"))
-
-// }
-
-// func (h *Handler) getBlogImageById(c *gin.Context) {
-
-// 	id, err := strconv.Atoi(c.Param("id"))
-// 	if err != nil {
-// 		newErrorResponse(c, http.StatusBadRequest, "invalid id param")
-// 		return
-// 	}
-
-// 	im_id, err := strconv.Atoi(c.Param("im_id"))
-// 	if err != nil {
-// 		newErrorResponse(c, http.StatusBadRequest, "invalid im_id param")
-// 		return
-// 	}
-
-// 	imagePath, err := h.services.BlogImage.GetImageById(id, im_id)
-// 	if err != nil {
-// 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-// 		return
-// 	}
-
-// 	image, err := os.Open(imagePath)
-// 	if err != nil {
-// 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-// 		return
-// 	}
-// 	defer image.Close()
-
-// 	if _, err := io.Copy(c.Writer, image); err != nil {
-// 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-// 		return
-// 	}
-
-// }
-
-// func (h *Handler) updateBlogImage(c *gin.Context) {
-
-// }
-
-func (h *Handler) deleteBlogImage(c *gin.Context) {
-	im_id, err := strconv.Atoi(c.Param("im_id"))
-	if err != nil {
-		newErrorResponse(c, http.StatusBadRequest, "invalid im_id param")
 		return
 	}
 
-	err = h.services.BlogImage.DeleteImage(im_id)
+	c.JSON(http.StatusOK, imageURLResponse{ImageURL: imageURL})
+}
+
+//	@Summary		Delete Blog Image
+//	@Description	Blog image API
+//	@Tags			blog
+//  @ID 			deleteblog api
+//	@Accept			json
+//	@Produce		json
+// @Security ApiKeyAuth
+//  @Param id path int true "Blog ID"
+//	@Success		200	{object}    statusResponse
+//	@Failure		400	{object}	errorResponse
+//	@Failure		404	{object}	errorResponse
+//	@Failure		500	{object}	errorResponse
+// @Router /api/blog/{id}/images [delete]
+func (h *Handler) deleteBlogImage(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, "inavlid id param")
+		return
+	}
+	err = h.services.BlogImage.DeleteImage(id)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 	c.JSON(http.StatusOK, statusResponse{
-		Status: "ok",
+		Status: "OK",
 	})
 }

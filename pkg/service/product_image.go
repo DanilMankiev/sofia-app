@@ -17,8 +17,8 @@ func (im *ImageService) CreateImage(input entity.ImageInputProduct) error {
 	return im.repo.CreateImage(input)
 }
 
-func (im *ImageService) DeleteImage(image_id int, prouct_id int) error {
-	return im.repo.DeleteImage(image_id, prouct_id)
+func (im *ImageService) DeleteImage(product_id int) error {
+	return im.repo.DeleteImage(product_id)
 }
 
 func(im *ImageService) CreatePreviewImage(url string, id int) error{

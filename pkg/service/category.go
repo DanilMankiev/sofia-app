@@ -13,7 +13,7 @@ func newCategoryService(repo repository.Category) *CategoryService {
 	return &CategoryService{repo: repo}
 }
 
-func (s *CategoryService) CreateCategory(category entity.Category) (int, error) {
+func (s *CategoryService) CreateCategory(category entity.CreateCategory) (int, error) {
 	return s.repo.CreateCategory(category)
 }
 
