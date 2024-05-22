@@ -33,7 +33,8 @@ func (h *Handler) signUp(c *gin.Context) {
 
 	err := h.services.Authorization.SignUp(input)
 	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		//newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		c.HTML(http.StatusInternalServerError,"name",err)
 		return
 	}
 

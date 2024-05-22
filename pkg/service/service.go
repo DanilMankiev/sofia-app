@@ -14,6 +14,7 @@ type Authorization interface {
 	ParseToken(token string) (string,error)
 	// GenerateTokens(uid string) (string,error)
 	RefreshToken(refreshToken string) (string,string,error)
+	ParseTOKEN(accessToken string) (string, error)
 }
 
 type User interface {
